@@ -1,0 +1,88 @@
+version: "3"
+services:
+
+    users_service:
+        environment:
+            DATABASE_HOST: database
+            DATABASE_DB: postgres
+            DATABASE_USER: postgres
+            DATABASE_PASSWORD: password
+            RABBITMQ_DEFAULT_USER: user
+            RABBITMQ_DEFAULT_PASS: password
+        build:
+            context: .
+        ports:
+            - "4001:4001"
+        restart: always
+        depends_on:
+            - database
+            - redis
+        networks:
+            - users_service_network
+
+
+    database:
+        image: postgres:latest
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+        ports:
+            - "5432:5432"
+        restart: always
+        networks:
+            - users_service_network
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+
+    pgadmin:
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: password
+        ports:
+            - "5050:80"
+        depends_on:
+            - database
+        networks:
+            - users_service_network
+
+
+    redis:
+        image: redis:latest
+        ports:
+            - "6379:6379"
+        restart: always
+        depends_on:
+            - database
+        networks:
+            - users_service_network
+        volumes:
+            - cache:/data
+
+    rabbit:
+        image: rabbitmq:latest
+        environment:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
+        ports:
+            - "5672:5672"
+        restart: always
+        depends_on:
+            - database
+            - redis
+        networks:
+            - users_service_network
+        volumes:
+            - rabbit:/data
+
+
+networks:
+    users_service_network:
+        driver: bridge
+
+volumes:
+    pgdata:
+    cache:
+    rabbit:

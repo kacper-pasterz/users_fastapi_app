@@ -1,0 +1,18 @@
+stages:
+  - build
+
+job:docker:
+  stage: build
+  image: python:alpine
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - apk add docker docker-compose
+    - docker-compose down --volumes
+  script:
+    - docker-compose up -d --build
+  after_script:
+    - docker-compose down --volumes
