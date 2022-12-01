@@ -1,9 +1,9 @@
-PYTHON + FastAPI
+Simple FastAPI project simulating users management app
 
-contenerization done with Docker
+For data storage I used SQLmodel and redis (memory cache)
 
-database: mySQL and redis (memory cache)
+For contenerization I used Docker
 
-dependencies issue solved with poetry
+Dependencies were solved with poetry
 
-venv: uvicorn
+Virtual environment using uvicorn
